@@ -4,8 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import { ObjectId } from "mongodb";
+
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {

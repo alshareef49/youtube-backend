@@ -15,7 +15,7 @@ async function getCommentAnalysisResponse(prompt) {
     "Important:\n" +
     "- Do not invent questions that were not asked.\n" +
     "- Maintain a neutral, helpful tone.\n" +
-    "- Final output should be a numbered list of unique questions.";
+    "- You supposed to give final question list just in one paragraph separated by pipe (|). and not include any extra words from your side jusr question list";
 
   const response = await client.chat.completions.create({
     model: "meta-llama/llama-4-scout-17b-16e-instruct",

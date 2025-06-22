@@ -4,6 +4,9 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("user.controller");
 
 
 const generateAccessAndRefereshTokens = async (userId) => {
@@ -11,7 +14,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
     const user = await User.findById(userId);
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
-
+    logger.info(`user:${user.email} requested referesh and access token \nAccess Token: ${accessToken}\nRefresh Token: ${refreshToken}`);
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
@@ -36,6 +39,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // return res
 
   const { fullName, email, username, password } = req.body;
+  logger.info(`user:${email} requested to register`);
   //console.log("email: ", email);
 
   if (
@@ -91,7 +95,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!createdUser) {
     throw new ApiError(500, "Something went wrong while registering the user");
-  }
+  };
+
+  logger.info(`user:${email} registered successfully`);
 
   return res
     .status(201)
@@ -146,6 +152,8 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
+  logger.info(`user:${user.email} logged in successfully`);
+
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -180,6 +188,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
+
+  logger.info(`user:${req.user.email} logged out successfully`);
 
   return res
     .status(200)
@@ -220,6 +230,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const { accessToken, newRefreshToken } =
       await generateAccessAndRefereshTokens(user._id);
 
+    
+      
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -249,6 +261,8 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
 
+  logger.info(`user:${user.email} changed password successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Password changed successfully"));
@@ -277,6 +291,8 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     },
     { new: true }
   ).select("-password");
+
+  logger.info(`user:${user.email} updated account details successfully`);
 
   return res
     .status(200)
@@ -308,6 +324,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
+  logger.info(`user:${user.email} updated avatar successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, user, "Avatar image updated successfully"));
@@ -337,6 +355,8 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     },
     { new: true }
   ).select("-password");
+
+  logger.info(`user:${user.email} updated cover image successfully`);
 
   return res
     .status(200)
@@ -403,11 +423,12 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // console.log(channel);
 
   if (!channel?.length) {
     throw new ApiError(404, "channel does not exists");
   }
+
+  logger.info(`user:${req.user.email} fetched channel profile successfully`);
 
   return res
     .status(200)
@@ -458,6 +479,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  logger.info(`user:${req.user.email} fetched watch history successfully`);
 
   return res
     .status(200)

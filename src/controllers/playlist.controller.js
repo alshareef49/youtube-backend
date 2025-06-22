@@ -3,6 +3,9 @@ import { Playlist } from "../models/playlist.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("playlist.controller");
 
 const createPlaylist = asyncHandler(async (req, res) => {
   const { name, description } = req.body;
@@ -20,6 +23,8 @@ const createPlaylist = asyncHandler(async (req, res) => {
   if(!playlist){
     throw new ApiError(400, "Playlist creation failed");
   }
+
+  logger.info(`Playlist created successfully`);
 
   return res
   .status(200)
@@ -43,6 +48,8 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Playlists not found");
   };
 
+  logger.info(`Playlists fetched successfully`);
+
   return res
   .status(200)
   .json(new ApiResponse(200, playlists, "Playlists fetched successfully"));
@@ -62,6 +69,8 @@ const getPlaylistById = asyncHandler(async (req, res) => {
   if (!playlist) {
     throw new ApiError(404, "Playlist not found");
   };
+
+  logger.info(`Playlist fetched successfully`);
 
   return res
   .status(200)
@@ -100,6 +109,8 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Playlist not found or video already added");
   };
 
+  logger.info(`Video added to playlist successfully`);
+
   return res
   .status(200)
   .json(
@@ -134,6 +145,8 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Playlist not found or video not found");
   };
 
+  logger.info(`Video removed from playlist successfully`);
+
   return res
     .status(200)
     .json(
@@ -156,6 +169,8 @@ const deletePlaylist = asyncHandler(async (req, res) => {
   if (!deletedPlaylistDoc) {
     throw new ApiError(404, "Playlist not found");
   }
+
+  logger.info(`Playlist deleted successfully`);
 
   return res
   .status(200)
@@ -193,6 +208,8 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   if (!updatedPlaylistDoc) {
     throw new ApiError(404, "Playlist not found");
   }
+
+  logger.info(`Playlist updated successfully`);
 
   return res
     .status(200)

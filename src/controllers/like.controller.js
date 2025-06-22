@@ -3,6 +3,9 @@ import { Like } from "../models/like.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("like.controller");
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
@@ -22,6 +25,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
   if(existingLike){
     await Like.findByIdAndDelete(existingLike._id);
+    logger.info(`Like removed successfully`);
     return res
     .status(200)
     .json(new ApiResponse(200, existingLike, "Like removed successfully"));
@@ -31,6 +35,8 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     video:videoId,
     likedBy: userId
   });
+
+  logger.info(`Like added successfully`);
 
   return res
   .status(200)
@@ -49,6 +55,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
   if(existingLike){
     await Like.findByIdAndDelete(existingLike._id);
+    logger.info(`Like removed successfully`);
     return res
     .status(200)
     .json(new ApiResponse(200, existingLike, "Like removed successfully"));
@@ -58,6 +65,8 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     comment: commentId,
     likedBy: userId
   });
+
+  logger.info(`Like added successfully`);
 
   return res
   .status(200)
@@ -104,6 +113,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
   const likedVideos = await Like.find({
     likedBy: userId
   });
+  logger.info(`Liked videos fetched successfully`);
   return res
   .status(200)
   .json(new ApiResponse(200, likedVideos, "Liked videos fetched successfully"));

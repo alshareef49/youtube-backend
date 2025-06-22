@@ -6,6 +6,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { getVideoDuration } from "../utils/videoDurationUtil.js";
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("video.controller");
 
 const getAllVideos = asyncHandler(async (req, res) => {
   const {
@@ -78,6 +81,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Videos are not found");
   }
 
+  logger.info(`Videos fetched successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, videos, "Videos fetched successfully"));
@@ -115,7 +120,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
       duration,
     });
 
-    console.log(` Title: ${title}, Owner: ${owner}, duration: ${duration}`);
+    logger.info(` Title: ${title}, Owner: ${owner}, duration: ${duration}`);
 
     if (!videoDoc) {
       throw new ApiError(500, "Something went wrong while publishing a video");
@@ -139,6 +144,8 @@ const getVideoById = asyncHandler(async (req, res) => {
   if (!video) {
     throw new ApiError(404, "Video not available");
   }
+
+  logger.info(`Video fetched successfully`);
 
   return res
     .status(200)
@@ -182,6 +189,8 @@ const updateVideo = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Video not found");
   }
 
+  logger.info(`Video updated successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, updatedVideo, "Video updated successfully"));
@@ -197,6 +206,9 @@ const deleteVideo = asyncHandler(async (req, res) => {
   if (!deletedVideo) {
     throw new ApiError(404, "Video not found");
   }
+
+  logger.info(`Video deleted successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, deletedVideo, "Video deleted successfully"));
@@ -204,6 +216,27 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+
+  video.isPublished = !video.isPublished;
+
+  await video.save();
+
+  logger.info(`Video publish status toggled successfully`);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, video, "Video publish status toggled successfully")
+    );
 });
 
 export {

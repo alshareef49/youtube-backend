@@ -5,6 +5,9 @@ import { Like } from "../models/like.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("dashboard.controller");
 
 const getChannelStats = asyncHandler(async (req, res) => {
 
@@ -84,6 +87,8 @@ const getChannelStats = asyncHandler(async (req, res) => {
     );
   }
 
+  logger.info(`Channel stats fetched successfully`);
+
   res.status(200).json(
     new ApiResponse(
       200,
@@ -112,6 +117,8 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   if (!videos || videos.length === 0) {
     throw new ApiError(404, "No videos found for this channel");
   }
+
+  logger.info(`Channel videos fetched successfully`);
 
   res
     .status(200)

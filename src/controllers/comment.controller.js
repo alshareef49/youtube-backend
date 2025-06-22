@@ -4,6 +4,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getCommentAnalysisResponse } from "../ai/index.js";
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("comment.controller");
 
 const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
@@ -65,6 +68,8 @@ const getVideoComments = asyncHandler(async (req, res) => {
     },
   ]);
 
+  logger.info(`Comments fetched successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, comments, "comments fetched successfully"));
@@ -88,6 +93,8 @@ const addComment = asyncHandler(async (req, res) => {
     video: videoId,
     owner: req.user?._id,
   });
+
+  logger.info(`Comment added successfully`);
 
   return res
     .status(200)
@@ -121,6 +128,9 @@ const updateComment = asyncHandler(async (req, res) => {
   if(!updatedComment){
     throw new ApiError(404, "Comment not found");
   }
+
+  logger.info(`Comment updated successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, updatedComment, "Comment updated successfully"));
@@ -141,6 +151,9 @@ const deleteComment = asyncHandler(async (req, res) => {
   if(!deletedComment){
     throw new ApiError(404, "Comment not found");
   }
+
+  logger.info(`Comment deleted successfully`);
+
   return res
     .status(200)
     .json(new ApiResponse(200, deletedComment, "Comment deleted successfully"));
@@ -201,6 +214,8 @@ const getCommentAnalysisReport = asyncHandler(async (req, res) => {
   const prompt = comments.map((comment) => comment.content).join("\n");
 
   const response = await getCommentAnalysisResponse(prompt);
+
+  logger.info(`Comment analysis report fetched successfully`);
 
   return res
     .status(200)

@@ -5,6 +5,10 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
+import { createLoggerUtil } from "../utils/logger.js";
+
+const logger = createLoggerUtil("subscription.controller");
+
 const toggleSubscription = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
   const subscriberId = req.user._id;
@@ -20,6 +24,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
   if(existingSubscription){
     await Subscription.findByIdAndDelete(existingSubscription._id);
+    logger.info(`Subscription removed successfully`);
     return res
     .status(200)
     .json(new ApiResponse(200, existingSubscription, "Subscription removed successfully"));
@@ -29,13 +34,12 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     channel: channelId,
     subscriber: subscriberId
   });
-
+  logger.info(`Subscription added successfully`);
   return res
   .status(200)
   .json(new ApiResponse(200, newSubscription, "Subscription added successfully"));
 });
 
-// controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
   if(!isValidObjectId(channelId)){
@@ -50,6 +54,8 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Subscribers not found");
   };
 
+ logger.info(`Subscribers fetched successfully`);
+
   return res
   .status(200)
   .json(new ApiResponse(200, subscribers, "Subscribers fetched successfully"));
@@ -57,7 +63,6 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 });
 
 
-// controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
   if(!isValidObjectId(subscriberId)){
@@ -71,6 +76,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
   if(!channels){
     throw new ApiError(404, "Channels not found");
   };
+
+  logger.info(`Channels fetched successfully`);
 
   return res
   .status(200)

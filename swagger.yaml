@@ -18,10 +18,9 @@ paths:
       description: Register a new user by providing the full name.
       security: [] # No authentication required
       requestBody:
-        description: User data required for registration
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               required:
                 - fullName
@@ -38,13 +37,13 @@ paths:
                   example: "johndoe"
                 email:
                   type: string
-                  example: "DlH8j@example.com"
+                  example: "john@example.com"
                 password:
                   type: string
                   example: "password123"
                 avatar:
-                  type: File
-                  example: "avatar.jpg"
+                  type: string
+                  format: binary
       responses:
         '200':
           description: User registered successfully

@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: My Node.js API
+  description: REST API for My Node.js Application
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development Server
+tags:
+  - name: Users
+    description: User related operations
+paths:
+  /api/v1/users/register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      description: Register a new user by providing the full name.
+      security: [] # No authentication required
+      requestBody:
+        description: User data required for registration
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - fullName
+                - username
+                - email
+                - password
+                - avatar
+              properties:
+                fullName:
+                  type: string
+                  example: "John Doe"
+                username:
+                  type: string
+                  example: "johndoe"
+                email:
+                  type: string
+                  example: "DlH8j@example.com"
+                password:
+                  type: string
+                  example: "password123"
+                avatar:
+                  type: File
+                  example: "avatar.jpg"
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "6857fa50ac1eca5a8e8f07fd"
+                      username:
+                        type: string
+                        example: "alshareef3"
+                      email:
+                        type: string
+                        example: "shareef3@gmail.com"
+                      fullName:
+                        type: string
+                        example: "Shareef Alam"
+                      avatar:
+                        type: string
+                        example: "http://res.cloudinary.com/dowwq7n4w/image/upload/v1750596176/icc8nm0bkrgulujxvvrf.jpg"
+                      coverImage:
+                        type: string
+                        example: ""
+                      watchHistory:
+                        type: array
+                        items:
+                          type: object
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: "2025-06-22T12:42:56.781Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: "2025-06-22T12:42:56.781Z"
+                      __v:
+                        type: integer
+                        example: 0
+                  message:
+                    type: string
+                    example: "User registered Successfully"
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request (Missing fullName or invalid data)
+        '500':
+          description: Internal Server Error
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []

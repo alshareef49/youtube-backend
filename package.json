@@ -4,7 +4,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch swagger.yaml -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon --watch swagger.yaml -r dotenv/config --experimental-json-modules src/index.js",
+    "dev-pm2": "pm2 start --watch swagger.yaml src/index.js -i max --name youtube-backend"
   },
   "dependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",

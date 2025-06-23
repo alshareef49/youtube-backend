@@ -13,7 +13,7 @@ import commentRouter from "./routes/comment.routes.js"
 import likeRouter from "./routes/like.routes.js"
 import playlistRouter from "./routes/playlist.routes.js"
 import dashboardRouter from "./routes/dashboard.routes.js"
-
+import rateLimit from 'express-rate-limit';
 
 const swaggerDocument = YAML.load("./swagger.yaml");
 
@@ -22,7 +22,17 @@ const app = express()
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true
-}))
+}));
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,  
+    max: 100,                
+    message: {
+      error: "Too many requests from this IP, please try again later.",
+    },
+  });
+
+app.use(limiter);
 
 app.use(express.json({limit: "16kb"}))
 app.use(express.urlencoded({extended: true, limit: "16kb"}))
